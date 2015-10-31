@@ -2,7 +2,7 @@
 //  AppDelegate.h
 //  LocationSampler
 //
-//  Created by れおん on 2015/10/31.
+//  Created on 2015/10/31.
 //
 //
 

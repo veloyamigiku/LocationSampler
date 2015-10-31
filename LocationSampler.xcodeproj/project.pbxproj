@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3500E8461BE4C1F300684D77 /* DeviceUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3500E8431BE4C1F300684D77 /* DeviceUtils.m */; };
+		3500E8471BE4C1F300684D77 /* LocationSampler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3500E8451BE4C1F300684D77 /* LocationSampler.m */; };
 		357D26C21BE4BCB0006E2951 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 357D26C11BE4BCB0006E2951 /* main.m */; };
 		357D26C51BE4BCB0006E2951 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 357D26C41BE4BCB0006E2951 /* AppDelegate.m */; };
 		357D26C81BE4BCB0006E2951 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 357D26C71BE4BCB0006E2951 /* ViewController.m */; };
@@ -16,6 +18,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3500E8421BE4C1F300684D77 /* DeviceUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceUtils.h; sourceTree = "<group>"; };
+		3500E8431BE4C1F300684D77 /* DeviceUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceUtils.m; sourceTree = "<group>"; };
+		3500E8441BE4C1F300684D77 /* LocationSampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationSampler.h; sourceTree = "<group>"; };
+		3500E8451BE4C1F300684D77 /* LocationSampler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationSampler.m; sourceTree = "<group>"; };
 		357D26BD1BE4BCB0006E2951 /* LocationSampler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocationSampler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		357D26C11BE4BCB0006E2951 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		357D26C31BE4BCB0006E2951 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -60,6 +66,10 @@
 			children = (
 				357D26C31BE4BCB0006E2951 /* AppDelegate.h */,
 				357D26C41BE4BCB0006E2951 /* AppDelegate.m */,
+				3500E8421BE4C1F300684D77 /* DeviceUtils.h */,
+				3500E8431BE4C1F300684D77 /* DeviceUtils.m */,
+				3500E8441BE4C1F300684D77 /* LocationSampler.h */,
+				3500E8451BE4C1F300684D77 /* LocationSampler.m */,
 				357D26C61BE4BCB0006E2951 /* ViewController.h */,
 				357D26C71BE4BCB0006E2951 /* ViewController.m */,
 				357D26C91BE4BCB0006E2951 /* Main.storyboard */,
@@ -149,6 +159,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				357D26C81BE4BCB0006E2951 /* ViewController.m in Sources */,
+				3500E8461BE4C1F300684D77 /* DeviceUtils.m in Sources */,
+				3500E8471BE4C1F300684D77 /* LocationSampler.m in Sources */,
 				357D26C51BE4BCB0006E2951 /* AppDelegate.m in Sources */,
 				357D26C21BE4BCB0006E2951 /* main.m in Sources */,
 			);

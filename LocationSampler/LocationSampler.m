@@ -9,10 +9,13 @@
 #import "LocationSampler.h"
 #import "DeviceUtils.h"
 #import <CoreLocation/CoreLocation.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 
-@interface LocationSampler () <CLLocationManagerDelegate>
+@interface LocationSampler () <CLLocationManagerDelegate, CBCentralManagerDelegate>
 
 @property CLLocationManager *manager;
+
+@property CBCentralManager *bluetoothManager;
 
 @property CLBeaconRegion *region;
 
@@ -20,7 +23,11 @@
 
 @implementation LocationSampler
 
+@synthesize delegate;
+
 @synthesize manager;
+
+@synthesize bluetoothManager;
 
 @synthesize region;
 
@@ -31,6 +38,7 @@
 {
     self = [super init];
     if (self) {
+        // 位置情報取得マネージャを初期化します。
         manager = [[CLLocationManager alloc] init];
         if ([DeviceUtils getIosVersion] >= 8.0) {
             [manager requestAlwaysAuthorization];
@@ -39,6 +47,9 @@
         NSString *uuid = @"AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
         region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
                                                     identifier:uuid];
+        
+        // ブルートゥースマネージャを初期化します。
+        bluetoothManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     }
     return self;
 }
@@ -101,6 +112,33 @@
               beacon.proximityUUID,
               beacon.major,
               beacon.minor);
+    }
+}
+
+/**
+ *  ブルートゥースの状態が変化した時のイベント処理です。
+ *
+ *  @param central セントラルです。
+ */
+- (void)centralManagerDidUpdateState:(CBCentralManager *)central
+{
+    switch (bluetoothManager.state) {
+        case CBCentralManagerStatePoweredOff:
+            [delegate bluetoothStatePowerOff];
+            break;
+        case CBCentralManagerStatePoweredOn:
+            [delegate bluetoothStatePowerOn];
+            break;
+        case CBCentralManagerStateResetting:
+            break;
+        case CBCentralManagerStateUnauthorized:
+            break;
+        case CBCentralManagerStateUnknown:
+            break;
+        case CBCentralManagerStateUnsupported:
+            break;
+        default:
+            break;
     }
 }
 

@@ -8,7 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol LocationSamplerDelegate <NSObject>
+
+/**
+ *  ブルートゥースの状態がoffに変わった時の処理です。
+ */
+- (void)bluetoothStatePowerOff;
+
+/**
+ *  ブルートゥースの状態がonに変わった時の処理です。
+ */
+- (void)bluetoothStatePowerOn;
+
+@end
+
 @interface LocationSampler : NSObject
+
+@property id<LocationSamplerDelegate> delegate;
 
 /**
  *  ibeaconのサンプリングを開始します。

@@ -9,7 +9,7 @@
 #import "LocationSampler.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface ViewController () <CLLocationManagerDelegate>
+@interface ViewController () <LocationSamplerDelegate>
 
 @property LocationSampler *locationSampler;
 
@@ -24,6 +24,7 @@
 - (void)viewDidLoad {
     // ロケーションサンプラを初期化します。
     locationSampler = [[LocationSampler alloc] init];
+    locationSampler.delegate = self;
     [super viewDidLoad];
 }
 
@@ -42,6 +43,16 @@
         [locationSampler stopIbeaconSampling];
     }
     
+}
+
+- (void)bluetoothStatePowerOn
+{
+    NSLog(@"%@", @"bluetoothOn");
+}
+
+- (void)bluetoothStatePowerOff
+{
+    NSLog(@"%@", @"bluetoothOff");
 }
 
 @end

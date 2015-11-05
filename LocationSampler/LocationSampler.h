@@ -97,16 +97,11 @@
 /**
  *  ibeaconのサンプリングを開始します。
  *
- *  @return サンプリング開始の結果(YES:成功,NO:失敗)
- */
-- (BOOL)startIbeaconSampling;
-
-/**
- *  ibeaconのサンプリングを開始します。
+ *  @param rangingOn レンジング処理実施フラグです。
  *
  *  @return サンプリング開始の結果(YES:成功,NO:失敗)
  */
-- (BOOL)startIbeaconSampling2;
+- (BOOL)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn;
 
 /**
  *  ibeaconのサンプリングを終了します。
@@ -114,12 +109,5 @@
  *  @return サンプリング終了の結果(YES:成功,NO:失敗)
  */
 - (BOOL)stopIbeaconSampling;
-
-/**
- *  ibeaconのサンプリングを終了します。
- *
- *  @return サンプリング終了の結果(YES:成功,NO:失敗)
- */
-- (BOOL)stopIbeaconSampling2;
 
 @end

@@ -20,6 +20,8 @@
 
 @property BOOL ibeaconSamplingOn;
 
+@property BOOL beaconRangingOn;
+
 @end
 
 @implementation LocationSampler
@@ -34,6 +36,8 @@
 
 @synthesize ibeaconSamplingOn;
 
+@synthesize beaconRangingOn;
+
 /**
  *  本オブジェクトを初期化します。
  */
@@ -42,6 +46,8 @@
     self = [super init];
     if (self) {
         ibeaconSamplingOn = NO;
+        
+        beaconRangingOn = NO;
         
         // 位置情報取得マネージャを初期化します。
         manager = [[CLLocationManager alloc] init];
@@ -126,9 +132,11 @@
 /**
  *  ibeaconのサンプリングを開始します。
  *
+ *  @param rangingOn レンジング処理実施フラグです。
+ *
  *  @return サンプリング開始の結果(YES:成功,NO:失敗)
  */
-- (BOOL)startIbeaconSampling
+- (BOOL)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn
 {
     // 位置情報取得(システム設定)が有効か確認します。
     if (![CLLocationManager locationServicesEnabled]) {
@@ -149,41 +157,12 @@
         return NO;
     }
     
-    for (int i = 0; i < regionAry.count; i++) {
-        [manager startRangingBeaconsInRegion:regionAry[i]];
-    }
-    
-    ibeaconSamplingOn = YES;
-    return YES;
-}
-
-- (BOOL)startIbeaconSampling2
-{
-    // 位置情報取得(システム設定)が有効か確認します。
-    if (![CLLocationManager locationServicesEnabled]) {
-        NSLog(@"%@", @"LocationService is disable.");
-        return NO;
-    }
-    
-    // 位置情報取得の確認が完了しているかチェックします。
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    if (status <= kCLAuthorizationStatusDenied) {
-        NSLog(@"%@", @"CLAuthorizationStatus is negative.");
-        return NO;
-    }
-    
-    //
-    if (![CLLocationManager isRangingAvailable]) {
-        NSLog(@"%@", @"Device is not support of bluetooth beacon.");
-        return NO;
-    }
-    
+    beaconRangingOn = rangingOn;
     for (int i = 0; i < regionAry.count; i++) {
         [manager startMonitoringForRegion:regionAry[i]];
     }
     
     ibeaconSamplingOn = YES;
-    
     return YES;
 }
 
@@ -196,16 +175,9 @@
 {
     BOOL result = YES;
     for (int i = 0; i < regionAry.count; i++) {
-        [manager stopRangingBeaconsInRegion:regionAry[i]];
-    }
-    ibeaconSamplingOn = NO;
-    return result;
-}
-
-- (BOOL)stopIbeaconSampling2
-{
-    BOOL result = YES;
-    for (int i = 0; i < regionAry.count; i++) {
+        if (beaconRangingOn) {
+            [manager stopRangingBeaconsInRegion:regionAry[i]];
+        }
         [manager stopMonitoringForRegion:regionAry[i]];
     }
     ibeaconSamplingOn = NO;
@@ -220,10 +192,8 @@
  */
 - (void)locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
 {
-    for (int i = 0; i < regionAry.count; i++) {
-        // リージョンステータス確認を要求します。
-        [self.manager requestStateForRegion:regionAry[i]];
-    }
+    // リージョンステータス確認を要求します。
+    [self.manager requestStateForRegion:region];
 }
 
 /**
@@ -239,6 +209,7 @@
         case CLRegionStateInside:
             if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
                 [delegate enterBeaconRegion:(CLBeaconRegion *)region];
+                [self.manager startRangingBeaconsInRegion:(CLBeaconRegion *)region];
             }
             break;
         case CLRegionStateOutside:
@@ -253,10 +224,16 @@
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
 {
     [delegate enterBeaconRegion:(CLBeaconRegion *)region];
+    if (beaconRangingOn) {
+        [self.manager startRangingBeaconsInRegion:(CLBeaconRegion *)region];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region
 {
+    if (beaconRangingOn) {
+        [self.manager stopRangingBeaconsInRegion:(CLBeaconRegion *)region];
+    }
     [delegate exitBeaconRegion:(CLBeaconRegion *)region];
 }
 

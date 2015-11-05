@@ -39,10 +39,10 @@
     
     if (startStopSwitch.on) {
         // ビーコンサンプリングを開始します。
-        [locationSampler startIbeaconSampling2];
+        [locationSampler startIbeaconSamplingWithRangingOn:YES];
     } else {
         // ビーコンサンプリングを終了します。
-        [locationSampler stopIbeaconSampling2];
+        [locationSampler stopIbeaconSampling];
     }
     
 }

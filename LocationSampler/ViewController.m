@@ -55,4 +55,14 @@
     NSLog(@"%@", @"bluetoothOff");
 }
 
+- (void)locationAuthorizationStatusAuthorized
+{
+    NSLog(@"%@", @"locationAuthorizationStatusAuthorized");
+}
+
+- (void)locationAuthorizationStatusDenied
+{
+    NSLog(@"%@", @"locationAuthorizationStatusDenied");
+}
+
 @end

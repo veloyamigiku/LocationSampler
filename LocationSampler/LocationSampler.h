@@ -20,6 +20,16 @@
  */
 - (void)bluetoothStatePowerOn;
 
+/**
+ *  位置情報取得が許可された時の処理です。
+ */
+- (void)locationAuthorizationStatusAuthorized;
+
+/**
+ *  位置情報取得が拒否された時の処理です。
+ */
+- (void)locationAuthorizationStatusDenied;
+
 @end
 
 @interface LocationSampler : NSObject

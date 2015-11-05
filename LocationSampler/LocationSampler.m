@@ -43,6 +43,8 @@
         if ([DeviceUtils getIosVersion] >= 8.0) {
             [manager requestAlwaysAuthorization];
         }
+        manager.delegate = self;
+        
         // あとで修正する対象です。
         NSString *uuid = @"AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
         region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
@@ -80,7 +82,6 @@
         return NO;
     }
     
-    manager.delegate = self;
     [manager startRangingBeaconsInRegion:region];
     return YES;
 }
@@ -94,7 +95,6 @@
 {
     BOOL result = YES;
     [manager stopRangingBeaconsInRegion:region];
-    manager.delegate = nil;
     return result;
 }
 
@@ -136,6 +136,26 @@
         case CBCentralManagerStateUnknown:
             break;
         case CBCentralManagerStateUnsupported:
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    switch (status) {
+        case kCLAuthorizationStatusAuthorized:
+            [delegate locationAuthorizationStatusAuthorized];
+            break;
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            break;
+        case kCLAuthorizationStatusDenied:
+            [delegate locationAuthorizationStatusDenied];
+            break;
+        case kCLAuthorizationStatusNotDetermined:
+            break;
+        case kCLAuthorizationStatusRestricted:
             break;
         default:
             break;

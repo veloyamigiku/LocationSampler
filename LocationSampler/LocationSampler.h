@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 
 @protocol LocationSamplerDelegate <NSObject>
 
@@ -29,6 +30,33 @@
  *  位置情報取得が拒否された時の処理です。
  */
 - (void)locationAuthorizationStatusDenied;
+
+/**
+ *  ビーコンリージョンに入った時の処理です。
+ *
+ *  @param manager 位置情報マネージャです。
+ *  @param state   状態です。
+ *  @param region  リージョンです。
+ */
+- (void)enterBeaconRegion:(CLBeaconRegion *)region;
+
+/**
+ *  ビーコン受信時の処理です
+ *
+ *  @param manager  位置情報マネージャです。
+ *  @param beacons  受信したビーコンです。
+ *  @param inRegion リージョンです。
+ */
+- (void)recvBeacon:(NSArray<CLBeacon *> *)beacons region:(CLBeaconRegion *)region;
+
+/**
+ *  ビーコンリージョンから出た時の処理です。
+ *
+ *  @param manager 位置情報マネージャです。
+ *  @param state   状態です。
+ *  @param region  リージョンです。
+ */
+- (void)exitBeaconRegion:(CLBeaconRegion *)region;
 
 @end
 
@@ -74,10 +102,24 @@
 - (BOOL)startIbeaconSampling;
 
 /**
+ *  ibeaconのサンプリングを開始します。
+ *
+ *  @return サンプリング開始の結果(YES:成功,NO:失敗)
+ */
+- (BOOL)startIbeaconSampling2;
+
+/**
  *  ibeaconのサンプリングを終了します。
  *
  *  @return サンプリング終了の結果(YES:成功,NO:失敗)
  */
 - (BOOL)stopIbeaconSampling;
+
+/**
+ *  ibeaconのサンプリングを終了します。
+ *
+ *  @return サンプリング終了の結果(YES:成功,NO:失敗)
+ */
+- (BOOL)stopIbeaconSampling2;
 
 @end

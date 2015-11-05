@@ -8,7 +8,6 @@
 
 #import "LocationSampler.h"
 #import "DeviceUtils.h"
-#import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
 @interface LocationSampler () <CLLocationManagerDelegate, CBCentralManagerDelegate>
@@ -70,6 +69,7 @@
 - (BOOL)addBeaconRegionWithUUID:(NSString *)uuid
 {
     BOOL result = YES;
+    
     if (ibeaconSamplingOn) {
         result = NO;
     } else {
@@ -157,6 +157,36 @@
     return YES;
 }
 
+- (BOOL)startIbeaconSampling2
+{
+    // 位置情報取得(システム設定)が有効か確認します。
+    if (![CLLocationManager locationServicesEnabled]) {
+        NSLog(@"%@", @"LocationService is disable.");
+        return NO;
+    }
+    
+    // 位置情報取得の確認が完了しているかチェックします。
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status <= kCLAuthorizationStatusDenied) {
+        NSLog(@"%@", @"CLAuthorizationStatus is negative.");
+        return NO;
+    }
+    
+    //
+    if (![CLLocationManager isRangingAvailable]) {
+        NSLog(@"%@", @"Device is not support of bluetooth beacon.");
+        return NO;
+    }
+    
+    for (int i = 0; i < regionAry.count; i++) {
+        [manager startMonitoringForRegion:regionAry[i]];
+    }
+    
+    ibeaconSamplingOn = YES;
+    
+    return YES;
+}
+
 /**
  *  ibeaconのサンプリングを終了します。
  *
@@ -172,6 +202,64 @@
     return result;
 }
 
+- (BOOL)stopIbeaconSampling2
+{
+    BOOL result = YES;
+    for (int i = 0; i < regionAry.count; i++) {
+        [manager stopMonitoringForRegion:regionAry[i]];
+    }
+    ibeaconSamplingOn = NO;
+    return result;
+}
+
+/**
+ *  ビーコンモニタリング開始時の処理です。
+ *
+ *  @param manager マネージャです。
+ *  @param region  リージョンです。
+ */
+- (void)locationManager:(CLLocationManager *)manager didStartMonitoringForRegion:(CLRegion *)region
+{
+    for (int i = 0; i < regionAry.count; i++) {
+        // リージョンステータス確認を要求します。
+        [self.manager requestStateForRegion:regionAry[i]];
+    }
+}
+
+/**
+ *  リージョンステータス確認時の処理です。
+ *
+ *  @param manager マネージャです。
+ *  @param state   状態です。
+ *  @param region  リージョンです。
+ */
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region
+{
+    switch (state) {
+        case CLRegionStateInside:
+            if ([region isMemberOfClass:[CLBeaconRegion class]] && [CLLocationManager isRangingAvailable]) {
+                [delegate enterBeaconRegion:(CLBeaconRegion *)region];
+            }
+            break;
+        case CLRegionStateOutside:
+            break;
+        case CLRegionStateUnknown:
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
+{
+    [delegate enterBeaconRegion:(CLBeaconRegion *)region];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region
+{
+    [delegate exitBeaconRegion:(CLBeaconRegion *)region];
+}
+
 /**
  *  ビーコン受信時の処理です。
  *
@@ -181,12 +269,7 @@
  */
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray<CLBeacon *> *)beacons inRegion:(CLBeaconRegion *)region
 {
-    for (CLBeacon *beacon in beacons) {
-        NSLog(@"%@,%@,%@",
-              beacon.proximityUUID,
-              beacon.major,
-              beacon.minor);
-    }
+    [delegate recvBeacon:beacons region:region];
 }
 
 /**

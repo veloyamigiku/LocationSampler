@@ -39,12 +39,32 @@
     
     if (startStopSwitch.on) {
         // ビーコンサンプリングを開始します。
-        [locationSampler startIbeaconSampling];
+        [locationSampler startIbeaconSampling2];
     } else {
         // ビーコンサンプリングを終了します。
-        [locationSampler stopIbeaconSampling];
+        [locationSampler stopIbeaconSampling2];
     }
     
+}
+
+- (void)enterBeaconRegion:(CLBeaconRegion *)region
+{
+    NSLog(@"enter:%@", region.proximityUUID.UUIDString);
+}
+
+- (void)recvBeacon:(NSArray<CLBeacon *> *)beacons region:(CLBeaconRegion *)region
+{
+    for (CLBeacon *beacon in beacons) {
+        NSLog(@"%@,%@,%@",
+              beacon.proximityUUID,
+              beacon.major,
+              beacon.minor);
+    }
+}
+
+- (void)exitBeaconRegion:(CLBeaconRegion *)region
+{
+    NSLog(@"exit:%@", region.proximityUUID.UUIDString);
 }
 
 - (void)bluetoothStatePowerOn

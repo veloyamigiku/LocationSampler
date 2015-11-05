@@ -19,6 +19,8 @@
 
 @property NSMutableArray *regionAry;
 
+@property BOOL ibeaconSamplingOn;
+
 @end
 
 @implementation LocationSampler
@@ -31,6 +33,8 @@
 
 @synthesize regionAry;
 
+@synthesize ibeaconSamplingOn;
+
 /**
  *  本オブジェクトを初期化します。
  */
@@ -38,6 +42,8 @@
 {
     self = [super init];
     if (self) {
+        ibeaconSamplingOn = NO;
+        
         // 位置情報取得マネージャを初期化します。
         manager = [[CLLocationManager alloc] init];
         if ([DeviceUtils getIosVersion] >= 8.0) {
@@ -58,11 +64,19 @@
  *  ビーコンリージョンを追加します。
  *
  *  @param uuid  UUIDです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid
 {
-    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                            identifier:uuid]];
+    BOOL result = YES;
+    if (ibeaconSamplingOn) {
+        result = NO;
+    } else {
+        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                identifier:uuid]];
+    }
+    return result;
 }
 
 /**
@@ -70,12 +84,20 @@
  *
  *  @param uuid  UUIDです。
  *  @param major majorです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
 {
-    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                 major:major
-                                                            identifier:uuid]];
+    BOOL result = YES;
+    if (ibeaconSamplingOn) {
+        result = NO;
+    } else {
+        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                     major:major
+                                                                identifier:uuid]];
+    }
+    return result;
 }
 
 /**
@@ -84,13 +106,21 @@
  *  @param uuid  UUIDです。
  *  @param major majorです。
  *  @param minor minorです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
 {
-    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                 major:major
-                                                                 minor:minor
-                                                            identifier:uuid]];
+    BOOL result = YES;
+    if (ibeaconSamplingOn) {
+        result = NO;
+    } else {
+        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                     major:major
+                                                                     minor:minor
+                                                                identifier:uuid]];
+    }
+    return result;
 }
 
 /**
@@ -122,6 +152,8 @@
     for (int i = 0; i < regionAry.count; i++) {
         [manager startRangingBeaconsInRegion:regionAry[i]];
     }
+    
+    ibeaconSamplingOn = YES;
     return YES;
 }
 
@@ -136,6 +168,7 @@
     for (int i = 0; i < regionAry.count; i++) {
         [manager stopRangingBeaconsInRegion:regionAry[i]];
     }
+    ibeaconSamplingOn = NO;
     return result;
 }
 

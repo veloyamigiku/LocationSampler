@@ -40,16 +40,20 @@
  *  ビーコンリージョンを追加します。
  *
  *  @param uuid  UUIDです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid;
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid;
 
 /**
  *  ビーコンリージョンを追加します。
  *
  *  @param uuid  UUIDです。
  *  @param major majorです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major;
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major;
 
 /**
  *  ビーコンリージョンを追加します。
@@ -57,8 +61,10 @@
  *  @param uuid  UUIDです。
  *  @param major majorです。
  *  @param minor minorです。
+ *
+ *  @return 処理結果。
  */
-- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor;
+- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor;
 
 /**
  *  ibeaconのサンプリングを開始します。

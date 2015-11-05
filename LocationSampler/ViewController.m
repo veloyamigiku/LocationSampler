@@ -25,6 +25,8 @@
     // ロケーションサンプラを初期化します。
     locationSampler = [[LocationSampler alloc] init];
     locationSampler.delegate = self;
+    NSString *uuid = @"AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
+    [locationSampler addBeaconRegionWithUUID:uuid];
     [super viewDidLoad];
 }
 

@@ -17,7 +17,7 @@
 
 @property CBCentralManager *bluetoothManager;
 
-@property CLBeaconRegion *region;
+@property NSMutableArray *regionAry;
 
 @end
 
@@ -29,7 +29,7 @@
 
 @synthesize bluetoothManager;
 
-@synthesize region;
+@synthesize regionAry;
 
 /**
  *  本オブジェクトを初期化します。
@@ -45,15 +45,52 @@
         }
         manager.delegate = self;
         
-        // あとで修正する対象です。
-        NSString *uuid = @"AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
-        region = [[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                    identifier:uuid];
+        // 監視するビーコンリージョンを初期化します。
+        regionAry = [NSMutableArray array];
         
         // ブルートゥースマネージャを初期化します。
         bluetoothManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     }
     return self;
+}
+
+/**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid
+{
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                            identifier:uuid]];
+}
+
+/**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ *  @param major majorです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
+{
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                 major:major
+                                                            identifier:uuid]];
+}
+
+/**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ *  @param major majorです。
+ *  @param minor minorです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
+{
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                 major:major
+                                                                 minor:minor
+                                                            identifier:uuid]];
 }
 
 /**
@@ -82,7 +119,9 @@
         return NO;
     }
     
-    [manager startRangingBeaconsInRegion:region];
+    for (int i = 0; i < regionAry.count; i++) {
+        [manager startRangingBeaconsInRegion:regionAry[i]];
+    }
     return YES;
 }
 
@@ -94,7 +133,9 @@
 - (BOOL)stopIbeaconSampling
 {
     BOOL result = YES;
-    [manager stopRangingBeaconsInRegion:region];
+    for (int i = 0; i < regionAry.count; i++) {
+        [manager stopRangingBeaconsInRegion:regionAry[i]];
+    }
     return result;
 }
 
@@ -160,6 +201,26 @@
         default:
             break;
     }
+}
+
+/**
+ *  (試験用)
+ */
+- (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
+{
+    switch (error.code) {
+        case kCLErrorRegionMonitoringDenied:
+            break;
+        case kCLErrorRegionMonitoringFailure:
+            break;
+        case kCLErrorRegionMonitoringResponseDelayed:
+            break;
+        case kCLErrorRegionMonitoringSetupDelayed:
+            break;
+        default:
+            break;
+    }
+    NSLog(@"error.code=%ld", (long)error.code);
 }
 
 @end

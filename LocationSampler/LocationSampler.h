@@ -37,6 +37,30 @@
 @property id<LocationSamplerDelegate> delegate;
 
 /**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid;
+
+/**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ *  @param major majorです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major;
+
+/**
+ *  ビーコンリージョンを追加します。
+ *
+ *  @param uuid  UUIDです。
+ *  @param major majorです。
+ *  @param minor minorです。
+ */
+- (void)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor;
+
+/**
  *  ibeaconのサンプリングを開始します。
  *
  *  @return サンプリング開始の結果(YES:成功,NO:失敗)

@@ -279,7 +279,7 @@
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     switch (status) {
-        case kCLAuthorizationStatusAuthorized:
+        case kCLAuthorizationStatusAuthorizedAlways:
             [delegate locationAuthorizationStatusAuthorized];
             break;
         case kCLAuthorizationStatusAuthorizedWhenInUse:

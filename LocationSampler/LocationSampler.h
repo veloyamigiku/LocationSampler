@@ -9,6 +9,16 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+typedef enum {
+    kLocationSamplerErrorNotError = 0,
+    kLocationSamplerErrorDoubleStart,
+    kLocationSamplerErrorDoubleStop,
+    kLocationSamplerErrorLocationServiceDisabled,
+    kLocationSamplerErrorAuthorizationStatusDenied,
+    kLocationSamplerErrorBeaconSamplingNotSupport,
+    kLocationSamplerErrorBeaconSamplingNgOperation
+} LocationSamplerError;
+
 @protocol LocationSamplerDelegate <NSObject>
 
 /**
@@ -71,7 +81,7 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid;
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid;
 
 /**
  *  ビーコンリージョンを追加します。
@@ -81,7 +91,7 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major;
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major;
 
 /**
  *  ビーコンリージョンを追加します。
@@ -92,7 +102,7 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor;
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor;
 
 /**
  *  ibeaconのサンプリングを開始します。
@@ -101,13 +111,13 @@
  *
  *  @return サンプリング開始の結果(YES:成功,NO:失敗)
  */
-- (BOOL)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn;
+- (LocationSamplerError)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn;
 
 /**
  *  ibeaconのサンプリングを終了します。
  *
  *  @return サンプリング終了の結果(YES:成功,NO:失敗)
  */
-- (BOOL)stopIbeaconSampling;
+- (LocationSamplerError)stopIbeaconSampling;
 
 @end

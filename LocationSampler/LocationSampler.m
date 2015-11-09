@@ -72,19 +72,19 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid
 {
     if (![self isAvailableIbeaconSampling]) {
-         return NO;
+         return kLocationSamplerErrorBeaconSamplingNotSupport;
     }
     
     if (ibeaconSamplingOn) {
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNgOperation;
     }
     
     [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
                                                                 identifier:uuid]];
-    return YES;
+    return kLocationSamplerErrorNotError;
 }
 
 /**
@@ -95,20 +95,20 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
 {
     if (![self isAvailableIbeaconSampling]) {
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNotSupport;
     }
     
     if (ibeaconSamplingOn) {
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNgOperation;
     }
     
     [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
                                                                  major:major
                                                             identifier:uuid]];
-    return YES;
+    return kLocationSamplerErrorNotError;
 }
 
 /**
@@ -120,21 +120,21 @@
  *
  *  @return 処理結果。
  */
-- (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
+- (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
 {
     if (![self isAvailableIbeaconSampling]) {
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNotSupport;
     }
     
     if (ibeaconSamplingOn) {
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNgOperation;
     }
     
     [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
                                                                  major:major
                                                                  minor:minor
                                                             identifier:uuid]];
-    return YES;
+    return kLocationSamplerErrorNotError;
 }
 
 /**
@@ -142,33 +142,29 @@
  *
  *  @param rangingOn レンジング処理実施フラグです。
  *
- *  @return サンプリング開始の結果(YES:成功,NO:失敗)
+ *  @return サンプリング開始の結果
  */
-- (BOOL)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn
+- (LocationSamplerError)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn
 {
     // サンプリング状態を確認します。
     if (ibeaconSamplingOn) {
-        NSLog(@"%@", @"Double Start is NG.");
-        return NO;
+        return kLocationSamplerErrorDoubleStart;
     }
     
     // 位置情報取得(システム設定)が有効か確認します。
     if (![CLLocationManager locationServicesEnabled]) {
-        NSLog(@"%@", @"LocationService is disable.");
-        return NO;
+        return kLocationSamplerErrorLocationServiceDisabled;
     }
     
     // 位置情報取得の確認が完了しているかチェックします。
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     if (status <= kCLAuthorizationStatusDenied) {
-        NSLog(@"%@", @"CLAuthorizationStatus is negative.");
-        return NO;
+        return kLocationSamplerErrorAuthorizationStatusDenied;
     }
     
     // Ibeaconのサンプリングが可能か確認します。
     if (![self isAvailableIbeaconSampling]) {
-        NSLog(@"%@", @"Device is not support of bluetooth beacon.");
-        return NO;
+        return kLocationSamplerErrorBeaconSamplingNotSupport;
     }
     
     beaconRangingOn = rangingOn;
@@ -177,22 +173,19 @@
     }
     
     ibeaconSamplingOn = YES;
-    return YES;
+    return kLocationSamplerErrorNotError;
 }
 
 /**
  *  ibeaconのサンプリングを終了します。
  *
- *  @return サンプリング終了の結果(YES:成功,NO:失敗)
+ *  @return サンプリング終了の結果
  */
-- (BOOL)stopIbeaconSampling
+- (LocationSamplerError)stopIbeaconSampling
 {
-    BOOL result = YES;
-    
     // サンプリング状態を確認します。
     if (!ibeaconSamplingOn) {
-        NSLog(@"%@", @"Double Stop is NG.");
-        return NO;
+        return kLocationSamplerErrorDoubleStop;
     }
     
     for (int i = 0; i < regionAry.count; i++) {
@@ -202,7 +195,7 @@
         [manager stopMonitoringForRegion:regionAry[i]];
     }
     ibeaconSamplingOn = NO;
-    return result;
+    return kLocationSamplerErrorNotError;
 }
 
 /**

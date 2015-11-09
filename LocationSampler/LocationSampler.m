@@ -74,15 +74,17 @@
  */
 - (BOOL)addBeaconRegionWithUUID:(NSString *)uuid
 {
-    BOOL result = YES;
+    if (![self isAvailableIbeaconSampling]) {
+         return NO;
+    }
     
     if (ibeaconSamplingOn) {
-        result = NO;
-    } else {
-        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                identifier:uuid]];
+        return NO;
     }
-    return result;
+    
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                identifier:uuid]];
+    return YES;
 }
 
 /**
@@ -95,15 +97,18 @@
  */
 - (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major
 {
-    BOOL result = YES;
-    if (ibeaconSamplingOn) {
-        result = NO;
-    } else {
-        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                     major:major
-                                                                identifier:uuid]];
+    if (![self isAvailableIbeaconSampling]) {
+        return NO;
     }
-    return result;
+    
+    if (ibeaconSamplingOn) {
+        return NO;
+    }
+    
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                 major:major
+                                                            identifier:uuid]];
+    return YES;
 }
 
 /**
@@ -117,16 +122,19 @@
  */
 - (BOOL)addBeaconRegionWithUUID:(NSString *)uuid withMajor:(int)major withMinor:(int)minor
 {
-    BOOL result = YES;
-    if (ibeaconSamplingOn) {
-        result = NO;
-    } else {
-        [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                     major:major
-                                                                     minor:minor
-                                                                identifier:uuid]];
+    if (![self isAvailableIbeaconSampling]) {
+        return NO;
     }
-    return result;
+    
+    if (ibeaconSamplingOn) {
+        return NO;
+    }
+    
+    [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
+                                                                 major:major
+                                                                 minor:minor
+                                                            identifier:uuid]];
+    return YES;
 }
 
 /**
@@ -151,8 +159,8 @@
         return NO;
     }
     
-    //
-    if (![CLLocationManager isRangingAvailable]) {
+    // Ibeaconのサンプリングが可能か確認します。
+    if (![self isAvailableIbeaconSampling]) {
         NSLog(@"%@", @"Device is not support of bluetooth beacon.");
         return NO;
     }
@@ -314,6 +322,21 @@
             break;
     }
     NSLog(@"error.code=%ld", (long)error.code);
+}
+
+/**
+ *  ビーコンサンプリングが可能な端末か確認します。
+ *
+ *  @return YES：可能、NO：不可。
+ */
+- (BOOL)isAvailableIbeaconSampling
+{
+    if ([CLLocationManager isMonitoringAvailableForClass:[CLBeaconRegion class]] &&
+        [CLLocationManager isRangingAvailable]) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 @end

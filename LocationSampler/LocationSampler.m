@@ -146,6 +146,12 @@
  */
 - (BOOL)startIbeaconSamplingWithRangingOn:(BOOL)rangingOn
 {
+    // サンプリング状態を確認します。
+    if (ibeaconSamplingOn) {
+        NSLog(@"%@", @"Double Start is NG.");
+        return NO;
+    }
+    
     // 位置情報取得(システム設定)が有効か確認します。
     if (![CLLocationManager locationServicesEnabled]) {
         NSLog(@"%@", @"LocationService is disable.");
@@ -182,6 +188,13 @@
 - (BOOL)stopIbeaconSampling
 {
     BOOL result = YES;
+    
+    // サンプリング状態を確認します。
+    if (!ibeaconSamplingOn) {
+        NSLog(@"%@", @"Double Stop is NG.");
+        return NO;
+    }
+    
     for (int i = 0; i < regionAry.count; i++) {
         if (beaconRangingOn) {
             [manager stopRangingBeaconsInRegion:regionAry[i]];

@@ -27,6 +27,11 @@
  */
 @property BOOL standardLocationSamplingOn;
 
+/**
+ *  大幅位置情報サンプリングの起動フラグです。
+ */
+@property BOOL significantLocationSamplingOn;
+
 @end
 
 @implementation LocationSampler
@@ -44,6 +49,8 @@
 @synthesize beaconRangingOn;
 
 @synthesize standardLocationSamplingOn;
+
+@synthesize significantLocationSamplingOn;
 
 /**
  *  本オブジェクトを初期化します。
@@ -396,6 +403,53 @@
     [manager stopUpdatingLocation];
     
     standardLocationSamplingOn = NO;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  大幅位置情報のサンプリングを開始します。
+ *
+ *  @return サンプリング開始の結果。
+ */
+- (LocationSamplerError)startSignificantLocationSampling
+{
+    // サンプリング状態を確認します。
+    if (significantLocationSamplingOn) {
+        return kLocationSamplerErrorDoubleStart;
+    }
+    
+    // 位置情報取得(システム設定)が有効か確認します。
+    if (![CLLocationManager locationServicesEnabled]) {
+        return kLocationSamplerErrorLocationServiceDisabled;
+    }
+    
+    // 位置情報取得の確認が完了しているかチェックします。
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status <= kCLAuthorizationStatusDenied) {
+        return kLocationSamplerErrorAuthorizationStatusDenied;
+    }
+    
+    [manager startMonitoringSignificantLocationChanges];
+    
+    significantLocationSamplingOn = YES;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  大幅位置情報のサンプリングを終了します。
+ *
+ *  @return サンプリング終了の結果。
+ */
+- (LocationSamplerError)stopSignificantLocationSampling
+{
+    // サンプリング状態を確認します。
+    if (!significantLocationSamplingOn) {
+        return kLocationSamplerErrorDoubleStop;
+    }
+    
+    [manager stopMonitoringSignificantLocationChanges];
+    
+    significantLocationSamplingOn = NO;
     return kLocationSamplerErrorNotError;
 }
 

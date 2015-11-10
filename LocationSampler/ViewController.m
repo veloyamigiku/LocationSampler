@@ -17,6 +17,8 @@
 
 - (IBAction)switchStandardLocationSampling:(id)sender;
 
+- (IBAction)switchSignificantLocationSampling:(id)sender;
+
 @end
 
 @implementation ViewController
@@ -62,6 +64,21 @@
     } else {
         // 標準位置情報サンプリングを終了します。
         [locationSampler stopStandardLocationSampling];
+    }
+}
+
+- (IBAction)switchSignificantLocationSampling:(id)sender
+{
+    UISwitch *startStopSwitch = (UISwitch *)sender;
+    
+    if (startStopSwitch.on) {
+        // 大幅位置情報サンプリングを開始します。
+        if ([locationSampler startSignificantLocationSampling]) {
+            startStopSwitch.on = NO;
+        }
+    } else {
+        // 大幅位置情報サンプリングを終了します。
+        [locationSampler stopSignificantLocationSampling];
     }
 }
 

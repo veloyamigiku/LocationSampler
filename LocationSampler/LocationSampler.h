@@ -149,4 +149,18 @@ typedef enum {
  */
 - (LocationSamplerError)stopStandardLocationSampling;
 
+/**
+ *  大幅位置情報のサンプリングを開始します。
+ *
+ *  @return サンプリング開始の結果。
+ */
+- (LocationSamplerError)startSignificantLocationSampling;
+
+/**
+ *  大幅位置情報のサンプリングを終了します。
+ *
+ *  @return サンプリング終了の結果。
+ */
+- (LocationSamplerError)stopSignificantLocationSampling;
+
 @end

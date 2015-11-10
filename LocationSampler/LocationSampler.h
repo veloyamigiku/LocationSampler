@@ -21,6 +21,7 @@ typedef enum {
 
 @protocol LocationSamplerDelegate <NSObject>
 
+@optional
 /**
  *  ブルートゥースの状態がoffに変わった時の処理です。
  */
@@ -67,6 +68,20 @@ typedef enum {
  *  @param region  リージョンです。
  */
 - (void)exitBeaconRegion:(CLBeaconRegion *)region;
+
+/**
+ *  位置情報取得時の処理です。
+ *
+ *  @param locations 位置情報です。
+ */
+- (void)didUpdateLocations:(NSArray<CLLocation *> *)locations;
+
+/**
+ *  位置情報取得中にエラーが発生した時の処理です。
+ *
+ *  @param error エラーです。
+ */
+- (void)didFailWithError:(NSError *)error;
 
 @end
 
@@ -119,5 +134,19 @@ typedef enum {
  *  @return サンプリング終了の結果(YES:成功,NO:失敗)
  */
 - (LocationSamplerError)stopIbeaconSampling;
+
+/**
+ *  標準位置情報のサンプリングを開始します。
+ *
+ *  @return サンプリング開始の結果。
+ */
+- (LocationSamplerError)startStandardLocationSampling;
+
+/**
+ *  標準位置情報のサンプリングを終了します。
+ *
+ *  @return サンプリング終了の結果。
+ */
+- (LocationSamplerError)stopStandardLocationSampling;
 
 @end

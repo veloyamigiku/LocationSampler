@@ -15,6 +15,8 @@
 
 - (IBAction)switchStartStop:(id)sender;
 
+- (IBAction)switchStandardLocationSampling:(id)sender;
+
 @end
 
 @implementation ViewController
@@ -47,6 +49,20 @@
         [locationSampler stopIbeaconSampling];
     }
     
+}
+
+- (IBAction)switchStandardLocationSampling:(id)sender {
+    UISwitch *startStopSwitch = (UISwitch *)sender;
+    
+    if (startStopSwitch.on) {
+        // 標準位置情報サンプリングを開始します。
+        if ([locationSampler startStandardLocationSampling]) {
+            startStopSwitch.on = NO;
+        }
+    } else {
+        // 標準位置情報サンプリングを終了します。
+        [locationSampler stopStandardLocationSampling];
+    }
 }
 
 - (void)enterBeaconRegion:(CLBeaconRegion *)region
@@ -87,6 +103,16 @@
 - (void)locationAuthorizationStatusDenied
 {
     NSLog(@"%@", @"locationAuthorizationStatusDenied");
+}
+
+- (void)didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    NSLog(@"%f,%f", locations[0].coordinate.latitude, locations[0].coordinate.longitude);
+}
+
+- (void)didFailWithError:(NSError *)error
+{
+    NSLog(@"[Standard Location Sampling Error] %@", error.description);
 }
 
 @end

@@ -22,6 +22,11 @@
 
 @property BOOL beaconRangingOn;
 
+/**
+ *  標準位置情報サンプリングの起動フラグです。
+ */
+@property BOOL standardLocationSamplingOn;
+
 @end
 
 @implementation LocationSampler
@@ -37,6 +42,8 @@
 @synthesize ibeaconSamplingOn;
 
 @synthesize beaconRangingOn;
+
+@synthesize standardLocationSamplingOn;
 
 /**
  *  本オブジェクトを初期化します。
@@ -343,6 +350,75 @@
     } else {
         return NO;
     }
+}
+
+/**
+ *  標準位置情報のサンプリングを開始します。
+ *
+ *  @return サンプリング開始の結果。
+ */
+- (LocationSamplerError)startStandardLocationSampling
+{
+    // サンプリング状態を確認します。
+    if (standardLocationSamplingOn) {
+        return kLocationSamplerErrorDoubleStart;
+    }
+    
+    // 位置情報取得(システム設定)が有効か確認します。
+    if (![CLLocationManager locationServicesEnabled]) {
+        return kLocationSamplerErrorLocationServiceDisabled;
+    }
+    
+    // 位置情報取得の確認が完了しているかチェックします。
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status <= kCLAuthorizationStatusDenied) {
+        return kLocationSamplerErrorAuthorizationStatusDenied;
+    }
+    
+    [manager startUpdatingLocation];
+    
+    standardLocationSamplingOn = YES;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  標準位置情報のサンプリングを開始します。
+ *
+ *  @return サンプリング終了の結果。
+ */
+- (LocationSamplerError)stopStandardLocationSampling
+{
+    // サンプリング状態を確認します。
+    if (!standardLocationSamplingOn) {
+        return kLocationSamplerErrorDoubleStop;
+    }
+    
+    [manager stopUpdatingLocation];
+    
+    standardLocationSamplingOn = NO;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  位置情報取得時の処理です。
+ *
+ *  @param manager   位置情報マネージャです。
+ *  @param locations 位置情報です。
+ */
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    [self.delegate didUpdateLocations:locations];
+}
+
+/**
+ *  位置情報中にエラーが発生した時の処理です。
+ *
+ *  @param manager 位置情報マネージャです。
+ *  @param error   エラーです。
+ */
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    [self.delegate didFailWithError:error];
 }
 
 @end

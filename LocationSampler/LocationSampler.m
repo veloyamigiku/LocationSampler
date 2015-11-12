@@ -516,6 +516,11 @@
         return kLocationSamplerErrorAuthorizationStatusDenied;
     }
     
+    // 方角取得が利用可否を確認します。
+    if (![CLLocationManager headingAvailable]) {
+        return kLocationSamplerErrorHeadingUnavailable;
+    }
+    
     manager.headingOrientation = deviceOrientation;
     [manager startUpdatingHeading];
     
@@ -564,6 +569,11 @@
     CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
     if (status <= kCLAuthorizationStatusDenied) {
         return kLocationSamplerErrorAuthorizationStatusDenied;
+    }
+    
+    // 方角取得が利用可否を確認します。
+    if (![CLLocationManager headingAvailable]) {
+        return kLocationSamplerErrorHeadingUnavailable;
     }
     
     manager.headingOrientation = deviceOrientation;

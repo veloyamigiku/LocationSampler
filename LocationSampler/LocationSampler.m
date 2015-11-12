@@ -32,6 +32,16 @@
  */
 @property BOOL significantLocationSamplingOn;
 
+/**
+ *  磁北サンプリングの起動フラグです。
+ */
+@property BOOL magneticNorthSamplingOn;
+
+/**
+ *  真北サンプリングの起動フラグです。
+ */
+@property BOOL trueNorthSamplingOn;
+
 @end
 
 @implementation LocationSampler
@@ -52,6 +62,10 @@
 
 @synthesize significantLocationSamplingOn;
 
+@synthesize magneticNorthSamplingOn;
+
+@synthesize trueNorthSamplingOn;
+
 /**
  *  本オブジェクトを初期化します。
  */
@@ -59,9 +73,11 @@
 {
     self = [super init];
     if (self) {
+        // サンプリング起動フラグを初期化します。
         ibeaconSamplingOn = NO;
-        
         beaconRangingOn = NO;
+        magneticNorthSamplingOn = NO;
+        trueNorthSamplingOn = NO;
         
         // 位置情報取得マネージャを初期化します。
         manager = [[CLLocationManager alloc] init];
@@ -89,7 +105,7 @@
 - (LocationSamplerError)addBeaconRegionWithUUID:(NSString *)uuid
 {
     if (![self isAvailableIbeaconSampling]) {
-         return kLocationSamplerErrorBeaconSamplingNotSupport;
+        return kLocationSamplerErrorBeaconSamplingNotSupport;
     }
     
     if (ibeaconSamplingOn) {
@@ -97,7 +113,7 @@
     }
     
     [regionAry addObject:[[CLBeaconRegion alloc] initWithProximityUUID:[[NSUUID alloc] initWithUUIDString:uuid]
-                                                                identifier:uuid]];
+                                                            identifier:uuid]];
     return kLocationSamplerErrorNotError;
 }
 
@@ -473,6 +489,119 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     [self.delegate didFailWithError:error];
+}
+
+/**
+ *  磁北サンプリングを開始します。
+ *
+ *  @param deviceOrientation 端末が北を指す向きです。
+ *
+ *  @return 開始結果。
+ */
+- (LocationSamplerError)startMagneticNorthSamplingWithDeviceOrientation:(CLDeviceOrientation)deviceOrientation
+{
+    // サンプリング状態を確認します。
+    if (magneticNorthSamplingOn) {
+        return kLocationSamplerErrorDoubleStart;
+    }
+    
+    // 位置情報取得(システム設定)が有効か確認します。
+    if (![CLLocationManager locationServicesEnabled]) {
+        return kLocationSamplerErrorLocationServiceDisabled;
+    }
+    
+    // 位置情報取得の確認が完了しているかチェックします。
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status <= kCLAuthorizationStatusDenied) {
+        return kLocationSamplerErrorAuthorizationStatusDenied;
+    }
+    
+    manager.headingOrientation = deviceOrientation;
+    [manager startUpdatingHeading];
+    
+    magneticNorthSamplingOn = YES;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  磁北サンプリングを終了します。
+ *
+ *  @return 終了結果。
+ */
+- (LocationSamplerError)stopMagneticNorthSampling
+{
+    // サンプリング状態を確認します。
+    if (!magneticNorthSamplingOn) {
+        return kLocationSamplerErrorDoubleStop;
+    }
+    
+    [manager stopUpdatingHeading];
+    
+    magneticNorthSamplingOn = NO;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  真北サンプリングを開始します。
+ *
+ *  @param deviceOrientation 端末が北を指す向きです。
+ *
+ *  @return 開始結果。
+ */
+- (LocationSamplerError)startTrueNorthSamplingWithDeviceOrientation:(CLDeviceOrientation)deviceOrientation
+{
+    // サンプリング状態を確認します。
+    if (trueNorthSamplingOn) {
+        return kLocationSamplerErrorDoubleStart;
+    }
+    
+    // 位置情報取得(システム設定)が有効か確認します。
+    if (![CLLocationManager locationServicesEnabled]) {
+        return kLocationSamplerErrorLocationServiceDisabled;
+    }
+    
+    // 位置情報取得の確認が完了しているかチェックします。
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    if (status <= kCLAuthorizationStatusDenied) {
+        return kLocationSamplerErrorAuthorizationStatusDenied;
+    }
+    
+    manager.headingOrientation = deviceOrientation;
+    [manager startUpdatingLocation];
+    [manager startUpdatingHeading];
+    
+    trueNorthSamplingOn = YES;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  真北サンプリングを終了します。
+ *
+ *  @return 終了結果。
+ */
+- (LocationSamplerError)stopTrueNorthSampling
+{
+    // サンプリング状態を確認します。
+    if (!trueNorthSamplingOn) {
+        return kLocationSamplerErrorDoubleStop;
+    }
+    
+    [manager stopUpdatingHeading];
+    [manager stopUpdatingLocation];
+    
+    trueNorthSamplingOn = NO;
+    return kLocationSamplerErrorNotError;
+}
+
+/**
+ *  方角取得時の処理です。
+ *
+ *  @param manager    位置情報マネージャです。
+ *  @param newHeading 方角情報です。
+ */
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
+    [delegate didUpdateHeading:newHeading];
 }
 
 @end

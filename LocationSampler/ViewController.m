@@ -19,6 +19,10 @@
 
 - (IBAction)switchSignificantLocationSampling:(id)sender;
 
+- (IBAction)switchMagneticNorthSampling:(id)sender;
+
+- (IBAction)switchTrueNorthSampling:(id)sender;
+
 @end
 
 @implementation ViewController
@@ -82,6 +86,36 @@
     }
 }
 
+- (IBAction)switchMagneticNorthSampling:(id)sender
+{
+    UISwitch *startStopSwitch = (UISwitch *)sender;
+    
+    if (startStopSwitch.on) {
+        // 磁北サンプリングを開始します。
+        if ([locationSampler startMagneticNorthSamplingWithDeviceOrientation:CLDeviceOrientationPortrait]) {
+            startStopSwitch.on = NO;
+        }
+    } else {
+        // 磁北サンプリングを終了します。
+        [locationSampler stopMagneticNorthSampling];
+    }
+}
+
+- (IBAction)switchTrueNorthSampling:(id)sender
+{
+    UISwitch *startStopSwitch = (UISwitch *)sender;
+    
+    if (startStopSwitch.on) {
+        // 真北サンプリングを開始します。
+        if ([locationSampler startTrueNorthSamplingWithDeviceOrientation:CLDeviceOrientationPortrait]) {
+            startStopSwitch.on = NO;
+        }
+    } else {
+        // 真北サンプリングを終了します。
+        [locationSampler stopTrueNorthSampling];
+    }
+}
+
 - (void)enterBeaconRegion:(CLBeaconRegion *)region
 {
     NSLog(@"enter:%@", region.proximityUUID.UUIDString);
@@ -130,6 +164,13 @@
 - (void)didFailWithError:(NSError *)error
 {
     NSLog(@"[Standard Location Sampling Error] %@", error.description);
+}
+
+- (void)didUpdateHeading:(CLHeading *)newHeading
+{
+    NSLog(@"%f,%f",
+          newHeading.magneticHeading,
+          newHeading.trueHeading);
 }
 
 @end

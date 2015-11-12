@@ -16,7 +16,8 @@ typedef enum {
     kLocationSamplerErrorLocationServiceDisabled,
     kLocationSamplerErrorAuthorizationStatusDenied,
     kLocationSamplerErrorBeaconSamplingNotSupport,
-    kLocationSamplerErrorBeaconSamplingNgOperation
+    kLocationSamplerErrorBeaconSamplingNgOperation,
+    kLocationSamplerErrorHeadingUnavailable
 } LocationSamplerError;
 
 @protocol LocationSamplerDelegate <NSObject>
@@ -82,6 +83,13 @@ typedef enum {
  *  @param error エラーです。
  */
 - (void)didFailWithError:(NSError *)error;
+
+/**
+ *  方角取得時の処理です。
+ *
+ *  @param newHeading 方角情報です。
+ */
+- (void)didUpdateHeading:(CLHeading *)newHeading;
 
 @end
 
@@ -162,5 +170,38 @@ typedef enum {
  *  @return サンプリング終了の結果。
  */
 - (LocationSamplerError)stopSignificantLocationSampling;
+
+/**
+ *  磁北サンプリングを開始します。
+ *
+ *  @param deviceOrientation 端末が北を指す向きです。
+ *
+ *  @return 開始結果。
+ */
+- (LocationSamplerError)startMagneticNorthSamplingWithDeviceOrientation:(CLDeviceOrientation)deviceOrientation;
+
+/**
+ *  磁北サンプリングを終了します。
+ *
+ *  @return 終了結果。
+ */
+- (LocationSamplerError)stopMagneticNorthSampling;
+
+/**
+ *  真北サンプリングを開始します。
+ *
+ *  @param deviceOrientation 端末が北を指す向きです。
+ *
+ *  @return 開始結果。
+ */
+- (LocationSamplerError)startTrueNorthSamplingWithDeviceOrientation:(CLDeviceOrientation)deviceOrientation;
+
+/**
+ *  真北サンプリングを終了します。
+ *
+ *  @return 終了結果。
+ */
+- (LocationSamplerError)stopTrueNorthSampling;
+
 
 @end
